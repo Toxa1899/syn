@@ -23,3 +23,13 @@ class Product(models.Model):
     class Meta:
         verbose_name = "Продукт"
         verbose_name_plural = "Продукты"
+
+
+class Salesman(models.Model):
+    name = models.CharField(max_length=50)
+    products = models.ManyToManyField(Product)
+
+
+class SalesmanAdditionally(models.Model):
+    salesman = models.OneToOneField(Salesman, on_delete=models.CASCADE)
+    description = models.TextField()
