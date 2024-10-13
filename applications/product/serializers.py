@@ -1,6 +1,11 @@
 from rest_framework import serializers
 
-from applications.product.models import Category, Product
+from applications.product.models import (
+    Category,
+    Product,
+    SalesmanAdditionally,
+    Salesman,
+)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -17,11 +22,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class SalesmanSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product
+        model = Salesman
         fields = "__all__"
 
 
 class SalesmanAdditionallySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product
+        model = SalesmanAdditionally
         fields = "__all__"

@@ -18,6 +18,19 @@
         <option value="">Выберите категорию</option>   
     </select>  
     <button id="create-product">Создать продукт</button>  
+
+
+    <h2>Создать продавца</h2>  
+    <input type="text" id="product-name" placeholder="Имя" />  
+    
+    <button id="create-salesman">Создать продавца</button>  
+
+
+
+
+
+
+
   
     <div style="display: flex;">
         <div style="margin-left: 10px;">
@@ -28,6 +41,12 @@
             <h2>Список продуктов</h2>  
             <div id="products-list"></div>  
         </div>
+
+        <div style="margin-left: 20px;">
+            <h2>Список продавцов</h2>  
+            <div id="salesman-list"></div>  
+        </div>
+
 </div>
 
     <script>        
@@ -74,6 +93,36 @@
             }
 
             
+
+
+            async function fetchSalesman() {
+                    try {
+                        const response = await fetch('/api/v1/products/salesman/'); // Замените на ваш API
+
+                        if (!response.ok) {
+                            throw new Error('Ошибка сети: ' + response.statusText);
+                        }
+
+                        const data = await response.json();
+
+                       
+                        const salesman = data.results || []; // Получаем массив продуктов
+
+                        const salesmanList = document.getElementById('salesman-list');
+                        salesmanList.innerHTML = '';
+
+           
+                        if (Array.isArray(salesman)) {
+                            salesman.forEach(salesman => {
+                                salesmanList.innerHTML += `<p>${salesman.name} </p>`; 
+                            });
+                        } else {
+                            console.error('Полученные данные не являются массивом:', salesman);
+                        }
+                    } catch (error) {
+                        console.error('Ошибка при получении продавцов:', error);
+                    }
+                }
 
 
 
@@ -155,6 +204,7 @@
         // Инициализация  
         fetchCategories();  
         fetchProducts();  
+        fetchSalesman();
     </script>  
 </body>  
 </html>
