@@ -21,7 +21,8 @@ services:
       - prediction-network
     expose:
       - 8000
-
+    ports:
+      - "8000:8000" 
     depends_on:
       - postgres-db
     environment:
