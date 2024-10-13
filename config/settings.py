@@ -183,3 +183,6 @@ LOGGING = {
         },
     },
 }
+
+INSTALLED_APPS += ["channels"]
+ASGI_APPLICATION = "myproject.asgi.application"

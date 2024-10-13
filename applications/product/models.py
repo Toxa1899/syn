@@ -26,10 +26,24 @@ class Product(models.Model):
 
 
 class Salesman(models.Model):
-    name = models.CharField(max_length=50)
-    products = models.ManyToManyField(Product)
+    name = models.CharField(max_length=50, verbose_name="Имя")
+    products = models.ManyToManyField(
+        Product, verbose_name="Внешний ключ на таблицу Product"
+    )
+
+    class Meta:
+        verbose_name = "Продавец"
+        verbose_name_plural = "Продавец"
 
 
 class SalesmanAdditionally(models.Model):
-    salesman = models.OneToOneField(Salesman, on_delete=models.CASCADE)
-    description = models.TextField()
+    salesman = models.OneToOneField(
+        Salesman,
+        on_delete=models.CASCADE,
+        verbose_name="Внешний ключ на таблицу Salesman",
+    )
+    description = models.TextField(verbose_name="описание")
+
+    class Meta:
+        verbose_name = "Продавец"
+        verbose_name_plural = "Продавец"

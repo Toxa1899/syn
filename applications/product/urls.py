@@ -11,9 +11,9 @@ from .views import (
 
 router = DefaultRouter()
 router.register("categories", CategoryModelViewSet)
-router.register("products", ProductModelViewSet)
 router.register("salesman", SalesmanModelViewSet)
 router.register("salesman_additionally", SalesmanAdditionallyModelViewSet)
+router.register("", ProductModelViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
