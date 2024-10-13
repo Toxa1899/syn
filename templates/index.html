@@ -1,0 +1,31 @@
+<button id="-" type="button">Создать категорию</button>
+<form action="">
+
+  <label for="category">First name:</label>
+  <input type="text" id="fname" name="fname"><br><br>
+  <label for="lname">Last name:</label>
+  <input type="text" id="lname" name="lname"><br><br>
+  <input type="submit" value="Submit">
+
+</form>
+<button id="" type="button">Создать продавца</button>
+<button id="create-product" type="button">Создать продукт</button>
+<div id="notifications"></div>
+
+<script>
+    const socket = new WebSocket("ws://localhost:8000/ws/notifications/");
+
+    socket.onmessage = function(event) {
+        const notifications = document.getElementById('notifications');
+        const message = JSON.parse(event.data).message;
+        notifications.innerHTML += `<p>${message}</p>`;
+    };
+
+    document.getElementById('create-product').onclick = async function() {
+        await fetch('/api/v1/products/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: 'телевизор', category: 1 })
+        });
+    };
+</script>

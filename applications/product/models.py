@@ -45,5 +45,5 @@ class SalesmanAdditionally(models.Model):
     description = models.TextField(verbose_name="описание")
 
     class Meta:
-        verbose_name = "Продавец"
-        verbose_name_plural = "Продавец"
+        verbose_name = "доп описание к продавцу"
+        verbose_name_plural = "доп описание к продавцам"

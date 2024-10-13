@@ -1,8 +1,7 @@
 from django.urls import path
 
-
-from .consumers import NotificationConsumer
+from .consumers import ProductConsumer
 
 websocket_urlpatterns = [
-    path("ws/notifications/", NotificationConsumer.as_asgi()),
+    path("ws/notifications/", ProductConsumer.as_asgi()),
 ]

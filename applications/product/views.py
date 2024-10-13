@@ -47,3 +47,7 @@ class SalesmanModelViewSet(ModelViewSet):
 class SalesmanAdditionallyModelViewSet(ModelViewSet):
     queryset = SalesmanAdditionally.objects.all()
     serializer_class = SalesmanAdditionallySerializer
+
+
+def index(request):
+    return render(request, "index.html")

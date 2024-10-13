@@ -6,15 +6,18 @@ from .views import (
     ProductModelViewSet,
     SalesmanAdditionallyModelViewSet,
     SalesmanModelViewSet,
+    index,
 )
 
 
 router = DefaultRouter()
+router.register("", ProductModelViewSet)
 router.register("categories", CategoryModelViewSet)
 router.register("salesman", SalesmanModelViewSet)
 router.register("salesman_additionally", SalesmanAdditionallyModelViewSet)
-router.register("", ProductModelViewSet)
+
 
 urlpatterns = [
+    path("index/", index),
     path("", include(router.urls)),
 ]
