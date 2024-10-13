@@ -167,19 +167,34 @@ AUTH_USER_MODEL = "account.CustomUser"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
+    # ログ出力フォーマットの設定
+    "formatters": {
+        "production": {
+            "format": "%(asctime)s [%(levelname)s] %(process)d %(thread)d "
+            "%(pathname)s:%(lineno)d %(message)s"
         },
     },
-    "root": {
-        "handlers": ["console"],
-        "level": "WARNING",
+    # ハンドラの設定
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": "app.log",
+            "formatter": "production",
+        },
     },
+    # ロガーの設定
     "loggers": {
+        # 自分で追加したアプリケーション全般のログを拾うロガー
+        "": {
+            "handlers": ["file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        # Django自身が出力するログ全般を拾うロガー
         "django": {
-            "handlers": ["console"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "handlers": ["file"],
+            "level": "INFO",
             "propagate": False,
         },
     },
