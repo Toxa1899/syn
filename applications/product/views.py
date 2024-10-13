@@ -29,6 +29,10 @@ class CategoryModelViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        notify_users({"text": f"создана новая категория: --> {instance.name}"})
+
 
 class ProductModelViewSet(ModelViewSet):
     queryset = Product.objects.all()
@@ -36,7 +40,7 @@ class ProductModelViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         instance = serializer.save()
-        notify_users({"text": f"Новый продукт: {instance.name}"})
+        notify_users({"text": f"создан новый продукт: -->  {instance.name}"})
 
 
 class SalesmanModelViewSet(ModelViewSet):

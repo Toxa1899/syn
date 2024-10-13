@@ -1,31 +1,162 @@
-<button id="-" type="button">Создать категорию</button>
-<form action="">
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>CRUD и связи между сущностями</title>  
+</head>  
+<body>  
+    <h1>CRUD</h1>  
+    <div id="notifications"></div>
+  
+    <h2>Создать категорию</h2>  
+    <input type="text" id="category-name" placeholder="Название категории" />  
+    <button id="create-category">Создать категорию</button>  
+  
+    <h2>Создать продукт</h2>  
+    <input type="text" id="product-name" placeholder="Название продукта" />  
+    <select id="category-select">  
+        <option value="">Выберите категорию</option>   
+    </select>  
+    <button id="create-product">Создать продукт</button>  
+  
+    <div style="display: flex;">
+        <div style="margin-left: 10px;">
+            <h2>Список категорий</h2>  
+            <div id="categories-list"></div>  
+        </div>
+        <div style="margin-left: 20px;">
+            <h2>Список продуктов</h2>  
+            <div id="products-list"></div>  
+        </div>
+</div>
 
-  <label for="category">First name:</label>
-  <input type="text" id="fname" name="fname"><br><br>
-  <label for="lname">Last name:</label>
-  <input type="text" id="lname" name="lname"><br><br>
-  <input type="submit" value="Submit">
+    <script>        
+        const socket = new WebSocket("ws://localhost:8000/ws/notifications/");
 
-</form>
-<button id="" type="button">Создать продавца</button>
-<button id="create-product" type="button">Создать продукт</button>
-<div id="notifications"></div>
-
-<script>
-    const socket = new WebSocket("ws://localhost:8000/ws/notifications/");
-
-    socket.onmessage = function(event) {
+        socket.onmessage = function(event) {
         const notifications = document.getElementById('notifications');
-        const message = JSON.parse(event.data).message;
+        const message = JSON.parse(event.data).message;  // Исправлено с .text на .message
         notifications.innerHTML += `<p>${message}</p>`;
     };
 
-    document.getElementById('create-product').onclick = async function() {
-        await fetch('/api/v1/products/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: 'телевизор', category: 1 })
-        });
-    };
-</script>
+
+
+
+        async function fetchCategories() {
+                try {
+                    const response = await fetch('/api/v1/products/categories/'); 
+                    if (!response.ok) {
+                        throw new Error('Ошибка сети: ' + response.statusText);
+                    }
+
+                    const data = await response.json();
+
+                    // Извлекаем массив категорий из results
+                    const categories = data.results || []; // Получаем массив категорий
+
+                    const categorySelect = document.getElementById('category-select');
+                    const categoriesList = document.getElementById('categories-list');
+                    categorySelect.innerHTML = '<option value="">Выберите категорию</option>'; // Очистка селекта
+                    categoriesList.innerHTML = ''; // Очистка списка
+
+                    // Проверяем, что это массив и отображаем категории
+                    if (Array.isArray(categories)) {
+                        categories.forEach(category => {
+                            categorySelect.innerHTML += `<option value="${category.id}">${category.name}</option>`;
+                            categoriesList.innerHTML += `<p>${category.name}</p>`; // Отображение категории
+                        });
+                    } else {
+                        console.error('Полученные данные не являются массивом:', categories);
+                    }
+                } catch (error) {
+                    console.error('Ошибка при получении категорий:', error);
+                }
+            }
+
+            
+
+
+
+
+  
+        // Функция для обновления списка продуктов  
+        async function fetchProducts() {
+                    try {
+                        const response = await fetch('/api/v1/products/'); // Замените на ваш API
+
+                        if (!response.ok) {
+                            throw new Error('Ошибка сети: ' + response.statusText);
+                        }
+
+                        const data = await response.json();
+
+                        // Извлекаем массив продуктов из results
+                        const products = data.results || []; // Получаем массив продуктов
+
+                        const productsList = document.getElementById('products-list');
+                        productsList.innerHTML = ''; // Очистка списка
+
+                        // Проверяем, что это массив и отображаем продукты
+                        if (Array.isArray(products)) {
+                            products.forEach(product => {
+                                productsList.innerHTML += `<p>${product.name} - Категория: ${product.category}</p>`; // Отображение продукта с категорией
+                            });
+                        } else {
+                            console.error('Полученные данные не являются массивом:', products);
+                        }
+                    } catch (error) {
+                        console.error('Ошибка при получении продуктов:', error);
+                    }
+                }
+
+
+
+        document.getElementById('create-category').onclick = async function() {  
+            const name = document.getElementById('category-name').value; 
+            
+            if (!name)  {
+                alert('Введитие название категории');
+                return ;
+
+            }
+            
+            await fetch('/api/v1/products/categories/', {  
+                method: 'POST',  
+                headers: { 'Content-Type': 'application/json' },  
+                body: JSON.stringify({ name: name })  
+            });  
+            await fetchCategories(); 
+        };  
+
+  
+        document.getElementById('create-product').onclick = async function() {  
+            const name = document.getElementById('product-name').value;  
+            const categoryId = document.getElementById('category-select').value;  
+            if (!categoryId)  {
+                alert('Введитие название категории');
+                return ;
+
+            }
+
+            if (!name)  {
+                alert('Введитие название продукта');
+                return ;
+
+            }
+
+            await fetch('/api/v1/products/', {  
+                method: 'POST',  
+                headers: { 'Content-Type': 'application/json' },  
+                body: JSON.stringify({ name: name, category: categoryId })  
+            });  
+            await fetchProducts(); // Обновление списка продуктов  
+        };  
+  
+        // Инициализация  
+        fetchCategories();  
+        fetchProducts();  
+    </script>  
+</body>  
+</html>
+
+

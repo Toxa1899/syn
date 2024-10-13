@@ -11,11 +11,11 @@ from .views import (
 
 
 router = DefaultRouter()
-router.register("", ProductModelViewSet)
+
 router.register("categories", CategoryModelViewSet)
 router.register("salesman", SalesmanModelViewSet)
 router.register("salesman_additionally", SalesmanAdditionallyModelViewSet)
-
+router.register("", ProductModelViewSet)
 
 urlpatterns = [
     path("index/", index),
