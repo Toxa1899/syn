@@ -1,0 +1,15 @@
+djangorestframework
+djangorestframework-simplejwt
+psycopg2-binary
+pillow
+drf-yasg
+python-decouple
+redis
+django-filter
+djangorestframework-pagination
+django-password-validators
+django-telegram-login
+isort
+flake8
+channels
+channels-redis
