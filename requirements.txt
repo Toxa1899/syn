@@ -10,6 +10,7 @@ djangorestframework-pagination
 django-password-validators
 django-telegram-login
 isort
+black
 flake8
 channels
 channels-redis

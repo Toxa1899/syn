@@ -14,4 +14,7 @@ class RegisterAPIView(APIView):
         serializers = RegisterSerializers(data=request.data)
         serializers.is_valid(raise_exception=True)
         serializers.save()
-        return Response('Вы успешно зарегистрировались вам отправлено письмо на почту', status=201)
+        return Response(
+            "Вы успешно зарегистрировались вам отправлено письмо на почту",
+            status=201,
+        )

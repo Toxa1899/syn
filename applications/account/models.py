@@ -36,9 +36,8 @@ class CustomUser(AbstractUser):
     username = None
     is_active = models.BooleanField(default=True)
     objects = CustomUserManager()
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return f'{self.email}'
-
+        return f"{self.email}"
