@@ -1,5 +1,12 @@
 version: '3.8'
 
+x-environment-defaults: &environment-defaults
+  DEBUG: "False"
+  DB_NAME: "prediction"
+  DB_USER: "prediction"
+  DB_PASSWORD: "prediction"
+  DB_HOST: "postgres-db"
+  DB_PORT: 5432
 
 services:
   web:
@@ -17,6 +24,8 @@ services:
 
     depends_on:
       - postgres-db
+    environment:
+      <<: *environment-defaults
 
 
     command: daphne -b 0.0.0.0 -p 8000 config.asgi:application
