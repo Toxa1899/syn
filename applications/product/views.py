@@ -49,6 +49,7 @@ class SalesmanModelViewSet(ModelViewSet):
 
 
 class SalesmanAdditionallyModelViewSet(ModelViewSet):
+
     queryset = SalesmanAdditionally.objects.all()
     serializer_class = SalesmanAdditionallySerializer
 

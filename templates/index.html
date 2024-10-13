@@ -21,8 +21,11 @@
 
 
     <h2>Создать продавца</h2>  
-    <input type="text" id="product-name" placeholder="Имя" />  
-    
+    <input type="text" id="salesman-name" placeholder="Имя" />  
+    <select id="salesman-select"  multiple style="display: block; margin: 20px 0 20px;">  
+        <option value="">Выберите продукт</option>   
+    </select>  
+
     <button id="create-salesman">Создать продавца</button>  
 
 
@@ -45,6 +48,11 @@
         <div style="margin-left: 20px;">
             <h2>Список продавцов</h2>  
             <div id="salesman-list"></div>  
+        </div>
+
+        <div style="margin-left: 20px;">
+            <h2>Описание продавцов</h2>  
+            <div id="salesman-description-list"></div>  
         </div>
 
 </div>
@@ -95,27 +103,51 @@
             
 
 
+
+
+
             async function fetchSalesman() {
                     try {
                         const response = await fetch('/api/v1/products/salesman/'); // Замените на ваш API
+                       
 
                         if (!response.ok) {
                             throw new Error('Ошибка сети: ' + response.statusText);
                         }
 
-                        const data = await response.json();
+                        const response_product = await fetch('/api/v1/products/'); 
 
+                        const data = await response.json();
+                        
+                        const data_product = await response_product.json();
                        
-                        const salesman = data.results || []; // Получаем массив продуктов
+                        const salesman = data.results || []; 
+
+                        const products = data_product.results || []; // Получаем массив продуктов
+
+                        
+                        console.log(salesman)
+
+
 
                         const salesmanList = document.getElementById('salesman-list');
                         salesmanList.innerHTML = '';
 
+                        const productSelect = document.getElementById('salesman-select');
            
                         if (Array.isArray(salesman)) {
                             salesman.forEach(salesman => {
-                                salesmanList.innerHTML += `<p>${salesman.name} </p>`; 
+                                const productNames = salesman.products
+                                    .map(product => product.name) 
+                                    .join(', '); 
+
+                                salesmanList.innerHTML += `<p>Продавец: ${salesman.name} - Продукты: ${productNames}</p>`; 
                             });
+
+                            products.forEach(product => {
+                                productSelect.innerHTML += `<option value="${product.id}">${product.name}</option>`;
+                            });
+
                         } else {
                             console.error('Полученные данные не являются массивом:', salesman);
                         }
@@ -123,6 +155,87 @@
                         console.error('Ошибка при получении продавцов:', error);
                     }
                 }
+
+
+
+                          
+
+
+            async function fetchadditionallySalesman() {
+                    try {
+                        const response = await fetch('/api/v1/products/salesman_additionally/'); // Замените на ваш API
+                       
+
+                        if (!response.ok) {
+                            throw new Error('Ошибка сети: ' + response.statusText);
+                        }
+
+                   
+
+                        const data = await response.json();
+                        
+                 
+                       
+                        const salesman = data.results || []; 
+
+                        console.log(salesman)
+
+
+
+                        const salesmanList = document.getElementById('salesman-description-list');
+                        salesmanList.innerHTML = '';
+
+                       
+           
+                        if (Array.isArray(salesman)) {
+                            salesman.forEach(salesman => {
+                                const name = salesman.salesman
+
+                                salesmanList.innerHTML += `<p>Продавец: ${name.name} - Описание: ${salesman.description}</p>`; 
+                            });
+
+                            // products.forEach(product => {
+                            //     productSelect.innerHTML += `<option value="${product.id}">${product.name}</option>`;
+                            // });
+
+                        } else {
+                            console.error('Полученные данные не являются массивом:', salesman);
+                        }
+                    } catch (error) {
+                        console.error('Ошибка при получении описания:', error);
+                    }
+                }
+
+        
+            document.getElementById('create-salesman').onclick = async function() {  
+            const name = document.getElementById('salesman-name').value; 
+            const productSelect = document.getElementById('salesman-select');
+
+            // Получение всех выбранных продуктов
+            const selectedOptions = Array.from(productSelect.selectedOptions);
+            const products = selectedOptions.map(option => option.value); // Массив выбранных продуктов
+
+            console.log(products); // Отладка: посмотрите, что вы получили
+
+            if (products.length === 0)  {
+                alert('Выберите продукт');
+                return;
+            }
+
+            if (!name)  {
+                alert('Введите имя для продавца');
+                return;
+            }
+            
+            await fetch('/api/v1/products/salesman/', {  
+                method: 'POST',  
+                headers: { 'Content-Type': 'application/json' },  
+                body: JSON.stringify({ name: name, products_w: products })  
+            });  
+            
+            await fetchSalesman(); // Обновление списка продавцов
+        };
+
 
 
 
@@ -205,6 +318,7 @@
         fetchCategories();  
         fetchProducts();  
         fetchSalesman();
+        fetchadditionallySalesman();
     </script>  
 </body>  
 </html>
