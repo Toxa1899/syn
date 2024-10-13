@@ -18,6 +18,7 @@ class Product(models.Model):
         Category,
         on_delete=models.CASCADE,
         verbose_name="Внешний ключ на таблицу Category",
+        related_name="product_category",
     )
 
     class Meta:

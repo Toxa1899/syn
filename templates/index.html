@@ -31,6 +31,16 @@
 
 
 
+    <h2>Добавить описание  продавцу </h2>  
+    <input type="text" id="salesman-description-name" placeholder="Описание" />  
+    <select id="salesman-description-select"   style="display: block; margin: 20px 0 20px;">  
+        <option value="">Выберите продавца</option>   
+    </select>  
+
+    <button id="create-description-salesman">Добавить описание</button>  
+
+
+
 
 
 
@@ -108,7 +118,7 @@
 
             async function fetchSalesman() {
                     try {
-                        const response = await fetch('/api/v1/products/salesman/'); // Замените на ваш API
+                        const response = await fetch('/api/v1/products/salesman/'); 
                        
 
                         if (!response.ok) {
@@ -123,7 +133,7 @@
                        
                         const salesman = data.results || []; 
 
-                        const products = data_product.results || []; // Получаем массив продуктов
+                        const products = data_product.results || []; 
 
                         
                         console.log(salesman)
@@ -137,7 +147,7 @@
            
                         if (Array.isArray(salesman)) {
                             salesman.forEach(salesman => {
-                                const productNames = salesman.products
+                                const productNames = salesman.products_data
                                     .map(product => product.name) 
                                     .join(', '); 
 
@@ -164,7 +174,7 @@
             async function fetchadditionallySalesman() {
                     try {
                         const response = await fetch('/api/v1/products/salesman_additionally/'); // Замените на ваш API
-                       
+                        const response_user = await fetch('/api/v1/products/salesman/'); 
 
                         if (!response.ok) {
                             throw new Error('Ошибка сети: ' + response.statusText);
@@ -173,30 +183,35 @@
                    
 
                         const data = await response.json();
-                        
+                        const data2 = await response_user.json()
+
                  
                        
                         const salesman = data.results || []; 
+                        const salesman2 = data2.results || []; 
 
                         console.log(salesman)
 
 
 
                         const salesmanList = document.getElementById('salesman-description-list');
+                        const salesmanSelect = document.getElementById('salesman-description-select');
                         salesmanList.innerHTML = '';
 
                        
            
                         if (Array.isArray(salesman)) {
                             salesman.forEach(salesman => {
-                                const name = salesman.salesman
+                                const name = salesman.salesman_data
 
                                 salesmanList.innerHTML += `<p>Продавец: ${name.name} - Описание: ${salesman.description}</p>`; 
                             });
 
-                            // products.forEach(product => {
-                            //     productSelect.innerHTML += `<option value="${product.id}">${product.name}</option>`;
-                            // });
+                            salesman2.forEach(salesman2 => {
+                                const name = salesman2
+
+                                salesmanSelect.innerHTML += `<option value="${name.id}">${name.name}</option>`;
+                            });
 
                         } else {
                             console.error('Полученные данные не являются массивом:', salesman);
@@ -230,12 +245,48 @@
             await fetch('/api/v1/products/salesman/', {  
                 method: 'POST',  
                 headers: { 'Content-Type': 'application/json' },  
-                body: JSON.stringify({ name: name, products_w: products })  
+                body: JSON.stringify({ name: name, products: products })  
             });  
             
             await fetchSalesman(); // Обновление списка продавцов
+
         };
 
+
+
+        document.getElementById('create-description-salesman').onclick = async function() {
+
+            const description = document.getElementById('salesman-description-name').value; 
+            const name = document.getElementById('salesman-description-select').value;
+         
+         
+
+           
+
+            if (!name)  {
+                alert('Выберите продавца');
+                return;
+            }
+
+            if (!description)  {
+                alert('Введите описание');
+                return;
+            }
+            
+            await fetch('/api/v1/products/salesman_additionally/', {  
+                method: 'POST',  
+                headers: { 'Content-Type': 'application/json' },  
+                body: JSON.stringify({ salesman: name, description: description })  
+            });  
+            
+            await fetchadditionallySalesman(); // Обновление списка продавцов
+        };
+
+
+
+
+
+        
 
 
 
@@ -261,7 +312,7 @@
                         // Проверяем, что это массив и отображаем продукты
                         if (Array.isArray(products)) {
                             products.forEach(product => {
-                                productsList.innerHTML += `<p>${product.name} - Категория: ${product.category}</p>`; // Отображение продукта с категорией
+                                productsList.innerHTML += `<p>${product.name} - Категория: ${product.category_data.name}</p>`; // Отображение продукта с категорией
                             });
                         } else {
                             console.error('Полученные данные не являются массивом:', products);
@@ -311,7 +362,9 @@
                 headers: { 'Content-Type': 'application/json' },  
                 body: JSON.stringify({ name: name, category: categoryId })  
             });  
-            await fetchProducts(); // Обновление списка продуктов  
+            await fetchProducts(); 
+            
+            
         };  
   
         // Инициализация  

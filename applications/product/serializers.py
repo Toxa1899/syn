@@ -15,63 +15,33 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    category_data = CategorySerializer(read_only=True, source="category")
+
     class Meta:
         model = Product
         fields = "__all__"
 
 
 class SalesmanSerializer(serializers.ModelSerializer):
-    products = ProductSerializer(many=True, read_only=True)
-    products_w = serializers.PrimaryKeyRelatedField(
-        queryset=Product.objects.all(), many=True, write_only=True
+    products_data = ProductSerializer(
+        many=True, read_only=True, source="products"
     )
 
     class Meta:
         model = Salesman
-        fields = ["id", "name", "products", "products_w"]
-
-    def create(self, validated_data):
-        products = validated_data.pop("products_w")
-        salesman = Salesman.objects.create(**validated_data)
-        salesman.products.set(products)
-        return salesman
-
-    def update(self, instance, validated_data):
-        products = validated_data.pop("products_w", None)
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        if products:
-            instance.products.set(products)
-        instance.save()
-        return instance
+        fields = "__all__"
 
 
 class SalesmanAdditionallySerializer(serializers.ModelSerializer):
-    salesman = SalesmanSerializer(read_only=True)
-    salesman_w = serializers.PrimaryKeyRelatedField(
-        queryset=Salesman.objects.all(), write_only=True
-    )
+    salesman_data = SalesmanSerializer(read_only=True, source="salesman")
 
     class Meta:
         model = SalesmanAdditionally
         fields = "__all__"
 
-    def create(self, validated_data):
-
-        salesman_instance = validated_data.pop("salesman_w")
-
-        validated_data["salesman"] = salesman_instance
-        return SalesmanAdditionally.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-
-        salesman_instance = validated_data.pop("salesman_w", None)
-
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-
-        if salesman_instance:
-            instance.salesman = salesman_instance
-
-        instance.save()
-        return instance
+    def validate_salesman(self, salesman):
+        if SalesmanAdditionally.objects.filter(salesman=salesman).exists():
+            raise serializers.ValidationError(
+                "Описание к данному пользователю уже существует"
+            )
+        return salesman
