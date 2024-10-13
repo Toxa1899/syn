@@ -47,10 +47,22 @@ class SalesmanModelViewSet(ModelViewSet):
     queryset = Salesman.objects.all()
     serializer_class = SalesmanSerializer
 
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        notify_users({"text": f"создана новый продавец: --> {instance.name}"})
+
 
 class SalesmanAdditionallyModelViewSet(ModelViewSet):
     queryset = SalesmanAdditionally.objects.all()
     serializer_class = SalesmanAdditionallySerializer
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        notify_users(
+            {
+                "text": f"доавблено описание к продавцу : --> {instance.description}"
+            }
+        )
 
 
 def index(request):

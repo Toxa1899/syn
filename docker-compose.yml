@@ -1,8 +1,6 @@
 version: '3.8'
 
 
-
-
 services:
   web:
     build:
@@ -10,17 +8,18 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./:/app
-      - .env:/tld/.env.docker
+      - .env:/syn/.env.docker
       - static_volume:/app/static/
     networks:
       - prediction-network
     expose:
       - 8000
-    environment:
-      <<: *environment-defaults
+
+    depends_on:
+      - postgres-db
 
 
-    command: gunicorn --bind 0.0.0.0:8000 config.wsgi:application
+    command: daphne -b 0.0.0.0 -p 8000 config.asgi:application
 
 
 
@@ -34,6 +33,19 @@ services:
 
 
 
+  postgres-db:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_DB: prediction
+      POSTGRES_USER: prediction
+      POSTGRES_PASSWORD: prediction
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - prediction-network
 
 
   nginx:
@@ -55,4 +67,4 @@ volumes:
 
 networks:
     prediction-network:
-    driver: bridge
+      driver: bridge
