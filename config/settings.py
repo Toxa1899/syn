@@ -212,14 +212,34 @@ LOGGING = {
 
 ASGI_APPLICATION = "config.asgi.application"
 
+# CHANNEL_LAYERS = {
+#     "default": {
+#         # "BACKEND": "channels.layers.InMemoryChannelLayer",
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("localhost", 6379)],
+#         },
+#     },
+# }
+
+
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-        # "BACKEND": "channels_redis.core.RedisChannelLayer",
-        # "CONFIG": {
-        #     "hosts": [("localhost", 6379)],
-        # },
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],  # Имя вашего контейнера redis и порт
+        },
     },
 }
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "asgi_redis.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("redis://redis:6379/1", 6379)],
+#         },
+#         "ROUTING": "django_channels.routing.channel_routing",
+#     },
+# }
 
 # SECURE_CROSS_ORIGIN_OPENER_POLICY = None

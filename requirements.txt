@@ -16,4 +16,8 @@ channels
 channels-redis
 gunicorn
 daphne
-
+uvicorn
+uvicorn[standard]
+websockets
+wsproto
+channels_redis

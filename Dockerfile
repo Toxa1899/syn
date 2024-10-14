@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt --verbose
 
 CMD python manage.py migrate \
     && python manage.py collectstatic --no-input \
-    && daphne -b 0.0.0.0 -p 8000 config.asgi:application
+    && uvicorn config.asgi:application --host 0.0.0.0 --port 8000
