@@ -68,8 +68,9 @@
 </div>
 
     <script>        
-        const socket = new WebSocket("ws://localhost/ws/notifications/");
+            const socket = new WebSocket("ws://localhost:8000/ws/notifications/");
 
+        
 
         socket.onmessage = function(event) {
         const notifications = document.getElementById('notifications');
